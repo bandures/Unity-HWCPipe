@@ -4,7 +4,7 @@ namespace Unity.Profiling
 {
     public static class HWCPipe
     {
-        enum CpuCounter
+        public enum CpuCounter
         {
             Cycles = 0,
             Instructions,
@@ -15,7 +15,7 @@ namespace Unity.Profiling
             MaxValue
         }
 
-        enum GpuCounter
+        public enum GpuCounter
         {
             GpuCycles,
             VertexComputeCycles,
@@ -52,6 +52,7 @@ namespace Unity.Profiling
             MaxValue
         }
 
+#if UNITY_ANDROID        
         [DllImport("hwcpipe")]
         public static extern void Start();
 
@@ -66,10 +67,10 @@ namespace Unity.Profiling
         public static extern int CPU_GetNumCounters();
 
         [DllImport("hwcpipe")]
-        public static extern bool CPU_IsCounterEnabled(int counterId);
+        public static extern bool CPU_IsCounterSupported(int counterId);
 
         [DllImport("hwcpipe")]
-        public static extern bool CPU_EnableCounter(int counterId);
+        public static extern void CPU_EnableCounter(int counterId);
 
         [DllImport("hwcpipe")]
         public static extern int CPU_GetCounterValue(int counterId);
@@ -79,12 +80,66 @@ namespace Unity.Profiling
         public static extern int GPU_GetNumCounters();
 
         [DllImport("hwcpipe")]
-        public static extern bool GPU_IsCounterEnabled(int counterId);
+        public static extern bool GPU_IsCounterSupported(int counterId);
 
         [DllImport("hwcpipe")]
-        public static extern bool GPU_EnableCounter(int counterId);
+        public static extern void GPU_EnableCounter(int counterId);
 
         [DllImport("hwcpipe")]
         public static extern int GPU_GetCounterValue(int counterId);
+#else
+        public static void Start()
+        {
+        }
+
+        public static void Stop()
+        {
+        }
+
+        public static void Sample()
+        {
+        }
+
+
+        public static int CPU_GetNumCounters()
+        {
+            return (int)CpuCounter.MaxValue;
+        }
+
+
+        public static bool CPU_IsCounterSupported(int counterId)
+        {
+            return false;
+        }
+
+        public static void CPU_EnableCounter(int counterId)
+        {
+        }
+
+        public static int CPU_GetCounterValue(int counterId)
+        {
+            return -1;
+        }
+
+
+        public static int GPU_GetNumCounters()
+        {
+            return (int)GpuCounter.MaxValue;
+        }
+
+        public static bool GPU_IsCounterSupported(int counterId)
+        {
+            return false;
+        }
+
+        public static void GPU_EnableCounter(int counterId)
+        {
+        }
+
+        public static int GPU_GetCounterValue(int counterId)
+        {
+            return -1;
+        }
+#endif
     }
 }
